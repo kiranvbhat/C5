@@ -1,7 +1,9 @@
-import string
+# Verbosify is a program that makes your sentences more verbose (by replacing each word with its longest synonym).
+
 import nltk
 # nltk.download('wordnet')      # you might need to uncomment this line the first time you run the program
 from nltk.corpus import wordnet
+import string
 
 '''
 given a word, returns it's longest synonym
