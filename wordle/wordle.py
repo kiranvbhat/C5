@@ -1,7 +1,10 @@
-from colorama import Fore, Back, Style
+from colorama import Fore, Back, Style      # used for coloring the letters on each guess
 import random
+import readline     # allows player to press up arrow to access their previous guesses
 
 ALPHABET = "abcdefghijklmnopqrstuvwxyz"
+VALID_LENGTHS = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 28, 45}
+MIN_NUM_GUESSES = 5
 
 '''
 This function reads the words in from a file (must contain a single word on each line)
@@ -19,6 +22,21 @@ def read_wordlist(wordlist_path):
             word = word.strip().lower()
             wordlist.append(word)
     return wordlist
+
+
+'''
+This function gets a users requested word length for the Wordle. Will continue to ask the user to input a new guess if their
+previous word length is not valid.
+
+Returns:
+- int: The user's requested word length
+'''
+def get_user_wordlen():
+    while True:
+        n = int(input(f"How many letters should today's Wordle have? "))
+        if n in VALID_LENGTHS:
+            return n
+        print(f"Invalid word length. Valid lengths are: {VALID_LENGTHS}")
 
 
 '''
@@ -64,13 +82,14 @@ This function runs a single game of Wordle
 
 Parameters:
 - wordlist (list): list of valid words (typically all words from the english dictionary)
-- n (int): length of the word to be guessed
-- num_guesses (int): the number of guesses the player will receive before losing
 '''
-def wordle(wordlist, n=5, num_guesses=6):
+def wordle(wordlist):
+    n = get_user_wordlen()
+    num_guesses = max(MIN_NUM_GUESSES, n + 1)
+
     n_letter_words = get_n_letter_words(wordlist, n)
     n_letter_words_set = set(n_letter_words)
-    todays_word = n_letter_words[random.randint(0, len(n_letter_words))]
+    todays_word = n_letter_words[random.randint(0, len(n_letter_words) - 1)]
     print(f"Here's a hint: {todays_word}")
 
     # Make letter dictionary (map each letter to the indices it appears at in today's word)
@@ -82,7 +101,7 @@ def wordle(wordlist, n=5, num_guesses=6):
         letter_to_indices[letter].add(i)
 
     while True:
-        # If the player runs out of guesses
+        # If the player runs out of guesses, player loses
         if num_guesses <= 0:
             print(f"YOU LOSE! The word was: {todays_word}")
             return
@@ -115,7 +134,7 @@ def wordle(wordlist, n=5, num_guesses=6):
 
 def main():
     wordlist = read_wordlist("wordlist.txt")
-    wordle(wordlist, n=5, num_guesses=6)
+    wordle(wordlist)
 
 
 if __name__ == "__main__":
